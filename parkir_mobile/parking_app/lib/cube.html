@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pembayaran Parkir</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+    </style>
+  </head>
+  <body class="bg-[#f5f7fa] min-h-screen flex flex-col">
+    <!-- Top bar -->
+    <header class="bg-white flex items-center px-4 py-3 shadow-sm">
+      <button
+        aria-label="Back"
+        class="text-black text-2xl pr-4 hover:text-gray-600 transition"
+      >
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <h1 class="flex-1 text-center text-gray-800 text-lg font-semibold">
+        Pembayaran Parkir
+      </h1>
+      <div class="w-8"></div>
+    </header>
+
+    <main class="flex-grow px-6 pt-6 pb-12">
+      <section
+        class="bg-white rounded-xl shadow-md max-w-md mx-auto p-6 space-y-6"
+        aria-label="Detail Pembayaran Parkir"
+      >
+        <div class="flex flex-col items-center">
+          <i class="fas fa-wallet text-[#e67e22] text-5xl mb-2"></i>
+          <h2 class="text-2xl font-semibold text-gray-900">
+            Detail Pembayaran
+          </h2>
+        </div>
+
+        <dl class="w-full space-y-5 text-gray-700 text-base">
+          <div class="flex justify-between">
+            <dt class="text-gray-500">Kode Parkir</dt>
+            <dd class="font-medium text-gray-900">PK-2024-045</dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-gray-500">Plat Nomor</dt>
+            <dd class="font-medium text-gray-900">B 1234 CDE</dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-gray-500">Waktu Masuk</dt>
+            <dd class="font-medium text-gray-900">07:58:55</dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-gray-500">Waktu Keluar</dt>
+            <dd class="font-medium text-gray-900">10:15:30</dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-gray-500">Durasi</dt>
+            <dd class="font-medium text-gray-900">2 jam 17 menit</dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-gray-500">Tarif / Jam</dt>
+            <dd class="font-medium text-gray-900">Rp 5.000</dd>
+          </div>
+          <div class="flex justify-between border-t border-gray-300 pt-4">
+            <dt class="text-gray-700 text-lg font-semibold">
+              Total Pembayaran
+            </dt>
+            <dd class="text-gray-900 text-lg font-bold">Rp 11.500</dd>
+          </div>
+          <p class="text-sm text-gray-500 text-right italic">
+            Tarif dihitung otomatis berdasarkan durasi parkir.
+          </p>
+        </dl>
+      </section>
+
+      <button
+        type="button"
+        class="mt-10 w-full max-w-md mx-auto bg-black text-white rounded-full py-4 px-6 flex items-center justify-center space-x-3 text-lg font-medium shadow-md hover:bg-gray-800 transition-all duration-200"
+      >
+        <i class="fas fa-credit-card text-white text-xl"></i>
+        <span>Bayar Sekarang</span>
+      </button>
+    </main>
+  </body>
+</html>
