@@ -29,7 +29,7 @@
 - [Struktur Direktori](#-struktur-direktori)
 - [Dokumentasi API](#-dokumentasi-api)
 - [Alur Autentikasi](#-alur-autentikasi)
-- [Screenshot Aplikasi](#-screenshot-aplikasi)
+- [Dokumentasi & Screenshot Tampilan Aplikasi](#-dokumentasi--screenshot-tampilan-aplikasi)
 - [Troubleshooting](#-troubleshooting)
 - [Lisensi](#-lisensi)
 
@@ -41,10 +41,10 @@
 
 Aplikasi ini dibangun dengan pendekatan **dua muka (dual-interface)**:
 
-| Antarmuka | Pengguna | Kegunaan |
-| :--- | :--- | :--- |
+| Antarmuka             | Pengguna               | Kegunaan                                                                                                                                    |
+| :-------------------- | :--------------------- | :------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Panel Admin (Web)** | `admin_super`, `admin` | Monitoring dashboard, rekapitulasi parkir masuk/keluar, laporan income, manajemen denda, master data, manajemen pengguna, dan ekspor Excel. |
-| **REST API (Mobile)** | `user`, `staff` | Registrasi & login, pemindaian QR parkir, pengelolaan kendaraan, top-up saldo (Midtrans), pembayaran denda, dan operasi petugas lapangan. |
+| **REST API (Mobile)** | `user`, `staff`        | Registrasi & login, pemindaian QR parkir, pengelolaan kendaraan, top-up saldo (Midtrans), pembayaran denda, dan operasi petugas lapangan.   |
 
 **Tujuan utama:**
 
@@ -73,13 +73,13 @@ Semua fitur operasional, **kecuali** Kelola Data Pengguna:
 - **Dashboard** — kartu statistik: total parkir, parkir hari ini, jumlah jenis kendaraan, denda pending, total denda, total income, dan income hari ini.
 - **Rekapitulasi Parkir** — data parkir masuk, parkir keluar, dan data gabungan (dengan pencarian plat nomor, sorting, dan pagination).
 - **Income** — ringkasan transaksi berbayar (`fee_admin`) beserta total pendapatan.
-- **Denda** — daftar denda berstatus *pending*, pencarian multi-field, dan aksi "Selesaikan Denda".
+- **Denda** — daftar denda berstatus _pending_, pencarian multi-field, dan aksi "Selesaikan Denda".
 - **Ekspor Excel** — unduh laporan parkir berdasarkan rentang tanggal (`maatwebsite/excel`).
 - **Master Data:**
-  - **Data Aplikasi** — ubah nama aplikasi, kode parkir, identitas perusahaan, dan logo (termasuk fitur reset ke pengaturan default).
-  - **Jenis Kendaraan** — CRUD tipe kendaraan beserta tarif parkir dan keterangan tarif.
-  - **Paket Topup** — CRUD paket saldo top-up (resource route).
-  - **Latar Aplikasi** — pengaturan tampilan latar.
+    - **Data Aplikasi** — ubah nama aplikasi, kode parkir, identitas perusahaan, dan logo (termasuk fitur reset ke pengaturan default).
+    - **Jenis Kendaraan** — CRUD tipe kendaraan beserta tarif parkir dan keterangan tarif.
+    - **Paket Topup** — CRUD paket saldo top-up (resource route).
+    - **Latar Aplikasi** — pengaturan tampilan latar.
 - **Logout** — dengan dialog konfirmasi SweetAlert2.
 
 ### 🧑‍✈️ Staff (REST API)
@@ -111,21 +111,21 @@ Semua fitur operasional, **kecuali** Kelola Data Pengguna:
 
 Sistem memiliki **empat role** yang tersebar di dua mekanisme autentikasi berbeda:
 
-| Role | Mekanisme Auth | Panel Web | Kelola Pengguna | API Endpoints |
-| :--- | :--- | :---: | :---: | :---: |
-| `admin_super` | Session (`loginStatus`, `adminData`, `role`) | ✅ | ✅ | ❌ |
-| `admin` | Session (`loginStatus`, `adminData`, `role`) | ✅ | ❌ (hidden & blocked) | ❌ |
-| `staff` | Sanctum Token | ❌ | ❌ | ✅ (endpoint staff) |
-| `user` | Sanctum Token | ❌ | ❌ | ✅ (endpoint pengguna) |
+| Role          | Mekanisme Auth                               | Panel Web |    Kelola Pengguna    |     API Endpoints      |
+| :------------ | :------------------------------------------- | :-------: | :-------------------: | :--------------------: |
+| `admin_super` | Session (`loginStatus`, `adminData`, `role`) |    ✅     |          ✅           |           ❌           |
+| `admin`       | Session (`loginStatus`, `adminData`, `role`) |    ✅     | ❌ (hidden & blocked) |           ❌           |
+| `staff`       | Sanctum Token                                |    ❌     |          ❌           |  ✅ (endpoint staff)   |
+| `user`        | Sanctum Token                                |    ❌     |          ❌           | ✅ (endpoint pengguna) |
 
 **Middleware yang digunakan:**
 
-| Alias | Kelas | Fungsi |
-| :--- | :--- | :--- |
-| `check.role` | `MiddlewareWeb\CheckAdminRole` | Middleware variadik, menerima satu/banyak role, mis. `check.role:admin_super,admin`. |
-| `staff` | `CheckStaff` | Membatasi endpoint API khusus petugas. |
-| `admin` | `CheckAdmin` | Pemeriksaan admin pada API. |
-| `auth:sanctum` | Laravel Sanctum | Proteksi endpoint API berbasis token. |
+| Alias          | Kelas                          | Fungsi                                                                               |
+| :------------- | :----------------------------- | :----------------------------------------------------------------------------------- |
+| `check.role`   | `MiddlewareWeb\CheckAdminRole` | Middleware variadik, menerima satu/banyak role, mis. `check.role:admin_super,admin`. |
+| `staff`        | `CheckStaff`                   | Membatasi endpoint API khusus petugas.                                               |
+| `admin`        | `CheckAdmin`                   | Pemeriksaan admin pada API.                                                          |
+| `auth:sanctum` | Laravel Sanctum                | Proteksi endpoint API berbasis token.                                                |
 
 > **Catatan keamanan:** Setiap aksi sensitif (edit/hapus akun, denda) memverifikasi ulang **password akun yang sedang login** menggunakan `Hash::check` terhadap `session('adminData')`.
 
@@ -135,16 +135,16 @@ Sistem memiliki **empat role** yang tersebar di dua mekanisme autentikasi berbed
 
 ### Backend
 
-| Teknologi | Versi | Keterangan |
-| :--- | :--- | :--- |
-| **PHP** | `^8.2` | Bahasa utama. |
-| **Laravel** | `^12.0` | Framework utama (bootstrap `bootstrap/app.php`). |
-| **Laravel Sanctum** | `^4.0` | Autentikasi token REST API. |
-| **Laravel Tinker** | `^2.10` | REPL interaktif. |
-| **Maatwebsite Excel** | `3.1.64` | Ekspor laporan parkir ke `.xlsx`. |
-| **Midtrans PHP** | `^2.6` | Payment gateway (Snap token). |
-| **Dedoc Scramble** | `^0.12` | Auto-generate dokumentasi OpenAPI. |
-| **MySQL** | — | Basis data relasional (default dev: `sistem_parkir`). |
+| Teknologi             | Versi    | Keterangan                                            |
+| :-------------------- | :------- | :---------------------------------------------------- |
+| **PHP**               | `^8.2`   | Bahasa utama.                                         |
+| **Laravel**           | `^12.0`  | Framework utama (bootstrap `bootstrap/app.php`).      |
+| **Laravel Sanctum**   | `^4.0`   | Autentikasi token REST API.                           |
+| **Laravel Tinker**    | `^2.10`  | REPL interaktif.                                      |
+| **Maatwebsite Excel** | `3.1.64` | Ekspor laporan parkir ke `.xlsx`.                     |
+| **Midtrans PHP**      | `^2.6`   | Payment gateway (Snap token).                         |
+| **Dedoc Scramble**    | `^0.12`  | Auto-generate dokumentasi OpenAPI.                    |
+| **MySQL**             | —        | Basis data relasional (default dev: `sistem_parkir`). |
 
 ### Tooling (Development)
 
@@ -152,16 +152,16 @@ Sistem memiliki **empat role** yang tersebar di dua mekanisme autentikasi berbed
 
 ### Frontend
 
-| Teknologi | Versi | Keterangan |
-| :--- | :--- | :--- |
-| **Vite** | `^6.2` | Build tool & dev server. |
-| **Tailwind CSS** | `^4.0` (`@tailwindcss/vite`) | Utility-first CSS (build aset via Vite). |
-| **laravel-vite-plugin** | `^1.2` | Integrasi Vite dengan Laravel. |
-| **Axios** | `^1.8` | HTTP client. |
-| **Alpine.js** | `3.x` (CDN) | Interaksi UI ringan (sidebar, dropdown, toggle). |
-| **SweetAlert2** | `11` (CDN) | Notifikasi & dialog konfirmasi global. |
-| **Font Awesome** | `5.15` (CDN) | Ikon. |
-| **Font Inter / Roboto** | Google Fonts | Tipografi panel admin & halaman login. |
+| Teknologi               | Versi                        | Keterangan                                       |
+| :---------------------- | :--------------------------- | :----------------------------------------------- |
+| **Vite**                | `^6.2`                       | Build tool & dev server.                         |
+| **Tailwind CSS**        | `^4.0` (`@tailwindcss/vite`) | Utility-first CSS (build aset via Vite).         |
+| **laravel-vite-plugin** | `^1.2`                       | Integrasi Vite dengan Laravel.                   |
+| **Axios**               | `^1.8`                       | HTTP client.                                     |
+| **Alpine.js**           | `3.x` (CDN)                  | Interaksi UI ringan (sidebar, dropdown, toggle). |
+| **SweetAlert2**         | `11` (CDN)                   | Notifikasi & dialog konfirmasi global.           |
+| **Font Awesome**        | `5.15` (CDN)                 | Ikon.                                            |
+| **Font Inter / Roboto** | Google Fonts                 | Tipografi panel admin & halaman login.           |
 
 > Panel admin memuat Tailwind, Alpine.js, SweetAlert2, dan Font Awesome melalui **CDN** di layout `app.blade.php`, sementara landing page & aset aplikasi menggunakan **Vite** (`resources/css/app.css`, `resources/js/app.js`).
 
@@ -174,7 +174,7 @@ Pastikan perangkat Anda telah terpasang:
 - **PHP >= 8.2** dengan ekstensi: `openssl`, `pdo`, `mbstring`, `tokenizer`, `xml`, `ctype`, `json`, `bcmath`, `fileinfo`, `curl`.
 - **Composer 2.x**
 - **Node.js >= 18** & **npm**
-- **MySQL 8.x** (atau MariaDB) — *atau* SQLite untuk keperluan cepat.
+- **MySQL 8.x** (atau MariaDB) — _atau_ SQLite untuk keperluan cepat.
 - **Git**
 
 > Lingkungan yang direkomendasikan untuk Windows: **Laragon** (PHP + MySQL + Composer siap pakai).
@@ -269,7 +269,7 @@ App\Models\Admin::create([
 npm run build
 ```
 
-> Untuk mode pengembangan dengan *hot reload*, gunakan `npm run dev`.
+> Untuk mode pengembangan dengan _hot reload_, gunakan `npm run dev`.
 
 ### 8. Tautkan Storage (Opsional)
 
@@ -303,21 +303,21 @@ php artisan queue:work
 
 Berikut variabel `.env` yang relevan untuk proyek ini:
 
-| Variabel | Contoh Nilai | Keterangan |
-| :--- | :--- | :--- |
-| `APP_NAME` | `GANPARKING` | Nama aplikasi. |
-| `APP_ENV` | `local` | Lingkungan aplikasi. |
-| `APP_URL` | `http://localhost` | URL dasar aplikasi. |
-| `DB_CONNECTION` | `mysql` | Driver database (`mysql` / `sqlite`). |
-| `DB_DATABASE` | `sistem_parkir` | Nama database. |
-| `SESSION_DRIVER` | `database` | Driver sesi (panel admin berbasis session). |
-| `QUEUE_CONNECTION` | `database` | Driver queue untuk job `DeletePendingTopup`. |
-| `CACHE_STORE` | `database` | Driver cache. |
-| `MIDTRANS_MERCHANT_ID` | `G0xxxxxxx` | Merchant ID Midtrans. |
-| `MIDTRANS_SERVER_KEY` | `SB-Mid-server-...` | **Server Key** (bersifat rahasia; jangan expose ke frontend). |
-| `MIDTRANS_CLIENT_KEY` | `SB-Mid-client-...` | Client Key Midtrans. |
-| `MIDTRANS_IS_PRODUCTION` | `false` | `false` = sandbox, `true` = produksi. |
-| `QR_SECRET_STATIC` | `...` | Secret key statis untuk penandatanganan QR Code (HMAC-SHA256). |
+| Variabel                 | Contoh Nilai        | Keterangan                                                     |
+| :----------------------- | :------------------ | :------------------------------------------------------------- |
+| `APP_NAME`               | `GANPARKING`        | Nama aplikasi.                                                 |
+| `APP_ENV`                | `local`             | Lingkungan aplikasi.                                           |
+| `APP_URL`                | `http://localhost`  | URL dasar aplikasi.                                            |
+| `DB_CONNECTION`          | `mysql`             | Driver database (`mysql` / `sqlite`).                          |
+| `DB_DATABASE`            | `sistem_parkir`     | Nama database.                                                 |
+| `SESSION_DRIVER`         | `database`          | Driver sesi (panel admin berbasis session).                    |
+| `QUEUE_CONNECTION`       | `database`          | Driver queue untuk job `DeletePendingTopup`.                   |
+| `CACHE_STORE`            | `database`          | Driver cache.                                                  |
+| `MIDTRANS_MERCHANT_ID`   | `G0xxxxxxx`         | Merchant ID Midtrans.                                          |
+| `MIDTRANS_SERVER_KEY`    | `SB-Mid-server-...` | **Server Key** (bersifat rahasia; jangan expose ke frontend).  |
+| `MIDTRANS_CLIENT_KEY`    | `SB-Mid-client-...` | Client Key Midtrans.                                           |
+| `MIDTRANS_IS_PRODUCTION` | `false`             | `false` = sandbox, `true` = produksi.                          |
+| `QR_SECRET_STATIC`       | `...`               | Secret key statis untuk penandatanganan QR Code (HMAC-SHA256). |
 
 > 🔒 **Jangan pernah meng-commit file `.env`.** Pastikan `.env` tetap berada di dalam `.gitignore` dan gunakan kredensial sandbox untuk pengembangan.
 
@@ -350,6 +350,7 @@ qr-parking/
 │   ├── factories/                  # Factory model
 │   ├── migrations/                 # Migrasi skema
 │   └── seeders/                    # Seeder (legacy)
+├── docs/                           # 📸 Screenshot tampilan aplikasi (dokumentasi)
 ├── public/
 │   ├── img/                        # Aset gambar & logo aplikasi
 │   └── index.php
@@ -373,7 +374,7 @@ qr-parking/
 
 **Catatan penting:**
 
-- **Layout `app.blade.php`** menggunakan `@stack('modals')` untuk merender modal pada level `<body>`, sehingga *overlay* menutupi 100% layar tanpa terpotong oleh konteks `stacking` sidebar.
+- **Layout `app.blade.php`** menggunakan `@stack('modals')` untuk merender modal pada level `<body>`, sehingga _overlay_ menutupi 100% layar tanpa terpotong oleh konteks `stacking` sidebar.
 - **Pagination** dikustomisasi melalui `resources/views/vendor/pagination/custom.blade.php` agar selaras dengan design system (slate/red, `rounded-lg`).
 - **Design system**: kartu `rounded-2xl`, `shadow-sm`, `border-slate-200`, aksen merah `red-600`, tipografi Inter.
 
@@ -385,41 +386,41 @@ Seluruh endpoint REST API terdaftar di `routes/api.php`. Berikut ringkasan endpo
 
 ### Publik
 
-| Method | Endpoint | Deskripsi |
-| :--- | :--- | :--- |
-| `POST` | `/api/register` | Registrasi pengguna baru. |
-| `POST` | `/api/login` | Login & menerbitkan token Sanctum. |
+| Method | Endpoint                     | Deskripsi                               |
+| :----- | :--------------------------- | :-------------------------------------- |
+| `POST` | `/api/register`              | Registrasi pengguna baru.               |
+| `POST` | `/api/login`                 | Login & menerbitkan token Sanctum.      |
 | `POST` | `/api/midtrans-notification` | Webhook notifikasi pembayaran Midtrans. |
-| `GET` | `/api/dendaIndex` | Daftar denda (API). |
+| `GET`  | `/api/dendaIndex`            | Daftar denda (API).                     |
 
 ### Terproteksi (`auth:sanctum`)
 
-| Method | Endpoint | Deskripsi |
-| :--- | :--- | :--- |
-| `POST` | `/api/logout` | Menghapus token aktif. |
-| `GET` | `/api/user` | Data pengguna yang login. |
-| `PUT` | `/api/update-user/{id_users}` | Perbarui profil pengguna. |
-| `POST` | `/api/topup-store` | Membuat transaksi top-up (Midtrans). |
-| `GET` | `/api/topup-show` | Daftar paket top-up aktif. |
-| `GET` | `/api/topup-show-saldo/{user_id}` | Saldo & riwayat top-up sukses. |
-| `POST` | `/api/kendaraan` | Tambah kendaraan. |
-| `GET` | `/api/kendaraan-index` | Daftar kendaraan pengguna. |
-| `PUT` | `/api/kendaraan-aktifkan/{id}` | Aktifkan kendaraan. |
-| `POST` | `/api/validasi-qr` | Validasi QR Code (HMAC signature). |
-| `POST` | `/api/catat-waktu-masuk` | Catat waktu masuk parkir. |
-| `PUT` | `/api/parkir/{kode_parkir}` | Proses keluar & perhitungan tarif. |
-| `GET` | `/api/tampil-riwayat-kendaraan-all/{user_id}` | Riwayat parkir lengkap. |
-| `GET` | `/api/denda/user/{id_users}` | Denda pending pengguna. |
-| `PUT` | `/api/denda/bayar` | Bayar denda. |
+| Method | Endpoint                                      | Deskripsi                            |
+| :----- | :-------------------------------------------- | :----------------------------------- |
+| `POST` | `/api/logout`                                 | Menghapus token aktif.               |
+| `GET`  | `/api/user`                                   | Data pengguna yang login.            |
+| `PUT`  | `/api/update-user/{id_users}`                 | Perbarui profil pengguna.            |
+| `POST` | `/api/topup-store`                            | Membuat transaksi top-up (Midtrans). |
+| `GET`  | `/api/topup-show`                             | Daftar paket top-up aktif.           |
+| `GET`  | `/api/topup-show-saldo/{user_id}`             | Saldo & riwayat top-up sukses.       |
+| `POST` | `/api/kendaraan`                              | Tambah kendaraan.                    |
+| `GET`  | `/api/kendaraan-index`                        | Daftar kendaraan pengguna.           |
+| `PUT`  | `/api/kendaraan-aktifkan/{id}`                | Aktifkan kendaraan.                  |
+| `POST` | `/api/validasi-qr`                            | Validasi QR Code (HMAC signature).   |
+| `POST` | `/api/catat-waktu-masuk`                      | Catat waktu masuk parkir.            |
+| `PUT`  | `/api/parkir/{kode_parkir}`                   | Proses keluar & perhitungan tarif.   |
+| `GET`  | `/api/tampil-riwayat-kendaraan-all/{user_id}` | Riwayat parkir lengkap.              |
+| `GET`  | `/api/denda/user/{id_users}`                  | Denda pending pengguna.              |
+| `PUT`  | `/api/denda/bayar`                            | Bayar denda.                         |
 
 ### Khusus Staff (`auth:sanctum` + `staff`)
 
-| Method | Endpoint | Deskripsi |
-| :--- | :--- | :--- |
-| `GET` | `/api/kendaraan/plat/{plat_nomor}` | Cari kendaraan berdasarkan plat. |
-| `POST` | `/api/kendaraan/store` | Catat denda kendaraan. |
-| `POST` | `/api/kendaraan/dendaNonUser` | Catat denda untuk non-user. |
-| `PUT` | `/api/update-staff/{id_users}` | Perbarui data pengguna oleh petugas. |
+| Method | Endpoint                           | Deskripsi                            |
+| :----- | :--------------------------------- | :----------------------------------- |
+| `GET`  | `/api/kendaraan/plat/{plat_nomor}` | Cari kendaraan berdasarkan plat.     |
+| `POST` | `/api/kendaraan/store`             | Catat denda kendaraan.               |
+| `POST` | `/api/kendaraan/dendaNonUser`      | Catat denda untuk non-user.          |
+| `PUT`  | `/api/update-staff/{id_users}`     | Perbarui data pengguna oleh petugas. |
 
 > 📖 **Dokumentasi OpenAPI otomatis** dihasilkan oleh **Dedoc Scramble** dan dapat diakses pada route default `/docs/api` setelah aplikasi berjalan.
 >
@@ -452,45 +453,53 @@ POST /api/login (username + password)
 
 ---
 
-## 🖼️ Screenshot Aplikasi
+## 📸 Dokumentasi & Screenshot Tampilan Aplikasi
 
-> Letakkan berkas gambar pada folder `docs/screenshots/` lalu sesuaikan path di bawah ini.
-
-<div align="center">
+Kumpulan tangkapan layar antarmuka **Panel Admin GANPARKING** yang tersimpan pada folder [`docs/`](docs/).
 
 ### 🔐 Halaman Login
-![Halaman Login](docs/screenshots/login.png)
+
+![Halaman Login - Autentikasi Panel Admin GANPARKING](docs/Halaman%20Login.png)
+
+> **Halaman Login** — Gerbang autentikasi panel administrator. Login menggunakan email & password yang divalidasi via rule `loginCheck`, dilengkapi notifikasi error SweetAlert2 dan pemilihan tema terang/gelap.
 
 ### 📊 Dashboard Admin
-![Dashboard Admin](docs/screenshots/dashboard.png)
+
+![Dashboard Admin - Ringkasan Statistik Parkir](docs/Dashboard%20Admin.png)
+
+> **Dashboard Admin** — Ringkasan statistik real-time: total parkir, parkir hari ini, jumlah jenis kendaraan, denda pending, total denda, total income, dan income hari ini — disajikan dalam kartu `rounded-2xl` dengan aksen merah.
 
 ### 🅿️ Rekapitulasi Parkir
-![Rekapitulasi Parkir](docs/screenshots/rekapitulasi-parkir.png)
+
+![Rekapitulasi Parkir - Data Parkir Masuk, Keluar, dan Gabungan](docs/Rekapitulasi%20Parkir.png)
+
+> **Rekapitulasi Parkir** — Rekapitulasi data parkir masuk, keluar, dan gabungan. Dilengkapi pencarian plat nomor, pengurutan (sorting), pemilihan jumlah baris, serta pagination yang dikustomisasi agar selaras dengan design system.
 
 ### 💰 Laporan Income
-![Laporan Income](docs/screenshots/income.png)
+
+![Laporan Income - Total Pendapatan Parkir](docs/Laporan%20Income.png)
+
+> **Laporan Income** — Ringkasan transaksi parkir berstatus _Sudah Dibayar_ beserta total pendapatan (`fee_admin`), jumlah transaksi, dan ekspor laporan ke Excel berdasarkan rentang tanggal.
 
 ### 👥 Kelola Data Pengguna
-![Kelola Data Pengguna](docs/screenshots/kelola-pengguna.png)
 
-### 📱 Aplikasi Mobile (REST API Consumer)
-![Aplikasi Mobile](docs/screenshots/mobile-app.png)
+![Kelola Data Pengguna - Manajemen Akun Admin, User, dan Staff](docs/Kelola%20Data%20Pengguna.png)
 
-</div>
+> **Kelola Data Pengguna** — Manajemen akun sistem (Data Admin, Data User, Data Staff) dengan modal scroll-safe yang menutupi seluruh layar serta konfirmasi password super admin untuk aksi sensitif. Menu ini **eksklusif** untuk role `admin_super`.
 
 ---
 
 ## 🩺 Troubleshooting
 
-| Masalah | Penyebab | Solusi |
-| :--- | :--- | :--- |
-| `Vite manifest not found at: .../public/build/manifest.json` | Aset belum di-build atau hash tidak sinkron. | Jalankan `npm run build` ulang. |
-| Halaman blank / 500 setelah ubah `.blade.php` | Cache view usang. | `php artisan view:clear && php artisan view:cache` |
-| Perubahan `.env` tidak berefek | Konfigurasi ter-cache. | `php artisan config:clear` |
-| Top-up tidak ter-update | Queue worker tidak berjalan. | Jalankan `php artisan queue:work`. |
-| Ikon/gambar hilang setelah upload | Storage symlink belum dibuat. | `php artisan storage:link` |
-| `419 Page Expired` pada form | Token CSRF hilang/kedaluwarsa. | Pastikan `@csrf` ada pada setiap form dan sesi aktif. |
-| `SQLSTATE: Unknown database` | Database belum dibuat. | Buat database sesuai `DB_DATABASE` pada `.env`. |
+| Masalah                                                      | Penyebab                                     | Solusi                                                |
+| :----------------------------------------------------------- | :------------------------------------------- | :---------------------------------------------------- |
+| `Vite manifest not found at: .../public/build/manifest.json` | Aset belum di-build atau hash tidak sinkron. | Jalankan `npm run build` ulang.                       |
+| Halaman blank / 500 setelah ubah `.blade.php`                | Cache view usang.                            | `php artisan view:clear && php artisan view:cache`    |
+| Perubahan `.env` tidak berefek                               | Konfigurasi ter-cache.                       | `php artisan config:clear`                            |
+| Top-up tidak ter-update                                      | Queue worker tidak berjalan.                 | Jalankan `php artisan queue:work`.                    |
+| Ikon/gambar hilang setelah upload                            | Storage symlink belum dibuat.                | `php artisan storage:link`                            |
+| `419 Page Expired` pada form                                 | Token CSRF hilang/kedaluwarsa.               | Pastikan `@csrf` ada pada setiap form dan sesi aktif. |
+| `SQLSTATE: Unknown database`                                 | Database belum dibuat.                       | Buat database sesuai `DB_DATABASE` pada `.env`.       |
 
 ---
 
@@ -519,6 +528,6 @@ Proyek ini dirilis di bawah **MIT License**.
 
 Dibuat dengan ❤️ menggunakan **Laravel 12** & **Tailwind CSS**.
 
-**GANPARKING** — *Parkir Modern, Tanpa Ribet.*
+**GANPARKING** — _Parkir Modern, Tanpa Ribet._
 
 </div>
