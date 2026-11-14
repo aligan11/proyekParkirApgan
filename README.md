@@ -459,31 +459,31 @@ Kumpulan tangkapan layar antarmuka **Panel Admin GANPARKING** yang tersimpan pad
 
 ### 🔐 Halaman Login
 
-![Halaman Login - Autentikasi Panel Admin GANPARKING](docs/Halaman%20Login.png)
+![Halaman Login - Autentikasi Panel Admin GANPARKING](qr-parking/docs/Halaman%20Login.png)
 
 > **Halaman Login** — Gerbang autentikasi panel administrator. Login menggunakan email & password yang divalidasi via rule `loginCheck`, dilengkapi notifikasi error SweetAlert2 dan pemilihan tema terang/gelap.
 
 ### 📊 Dashboard Admin
 
-![Dashboard Admin - Ringkasan Statistik Parkir](docs/Dashboard%20Admin.png)
+![Dashboard Admin - Ringkasan Statistik Parkir](qr-parking/docs/Dashboard%20Admin.png)
 
 > **Dashboard Admin** — Ringkasan statistik real-time: total parkir, parkir hari ini, jumlah jenis kendaraan, denda pending, total denda, total income, dan income hari ini — disajikan dalam kartu `rounded-2xl` dengan aksen merah.
 
 ### 🅿️ Rekapitulasi Parkir
 
-![Rekapitulasi Parkir - Data Parkir Masuk, Keluar, dan Gabungan](docs/Rekapitulasi%20Parkir.png)
+![Rekapitulasi Parkir - Data Parkir Masuk, Keluar, dan Gabungan](qr-parking/docs/Rekapitulasi%20Parkir.png)
 
 > **Rekapitulasi Parkir** — Rekapitulasi data parkir masuk, keluar, dan gabungan. Dilengkapi pencarian plat nomor, pengurutan (sorting), pemilihan jumlah baris, serta pagination yang dikustomisasi agar selaras dengan design system.
 
 ### 💰 Laporan Income
 
-![Laporan Income - Total Pendapatan Parkir](docs/Laporan%20Income.png)
+![Laporan Income - Total Pendapatan Parkir](qr-parking/docs/Laporan%20Income.png)
 
 > **Laporan Income** — Ringkasan transaksi parkir berstatus _Sudah Dibayar_ beserta total pendapatan (`fee_admin`), jumlah transaksi, dan ekspor laporan ke Excel berdasarkan rentang tanggal.
 
 ### 👥 Kelola Data Pengguna
 
-![Kelola Data Pengguna - Manajemen Akun Admin, User, dan Staff](docs/Kelola%20Data%20Pengguna.png)
+![Kelola Data Pengguna - Manajemen Akun Admin, User, dan Staff](qr-parking/docs/Kelola%20Data%20Pengguna.png)
 
 > **Kelola Data Pengguna** — Manajemen akun sistem (Data Admin, Data User, Data Staff) dengan modal scroll-safe yang menutupi seluruh layar serta konfirmasi password super admin untuk aksi sensitif. Menu ini **eksklusif** untuk role `admin_super`.
 
