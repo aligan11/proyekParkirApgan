@@ -146,24 +146,26 @@
                 </div>
             </div>
 
-            {{-- Pengguna --}}
-            <div>
-                <p class="{{ $section }}">Pengguna</p>
-                <div class="space-y-1">
-                    <a href="{{ route('admin.index') }}"
-                        class="{{ $linkBase }} {{ request()->routeIs('admin.index') ? $linkOn : $linkOff }}">
-                        <i class="fas fa-user-shield w-5 text-center"></i> Data Admin
-                    </a>
-                    <a href="{{ route('admin.createUser') }}"
-                        class="{{ $linkBase }} {{ request()->routeIs('admin.createUser') ? $linkOn : $linkOff }}">
-                        <i class="fas fa-user-plus w-5 text-center"></i> Data User
-                    </a>
-                    <a href="{{ route('admin.createStaff') }}"
-                        class="{{ $linkBase }} {{ request()->routeIs('admin.createStaff') ? $linkOn : $linkOff }}">
-                        <i class="fas fa-user-tie w-5 text-center"></i> Data Staff
-                    </a>
+            {{-- Pengguna (hanya admin_super) --}}
+            @if (session('role') === 'admin_super')
+                <div>
+                    <p class="{{ $section }}">Pengguna</p>
+                    <div class="space-y-1">
+                        <a href="{{ route('admin.index') }}"
+                            class="{{ $linkBase }} {{ request()->routeIs('admin.index') ? $linkOn : $linkOff }}">
+                            <i class="fas fa-user-shield w-5 text-center"></i> Data Admin
+                        </a>
+                        <a href="{{ route('admin.createUser') }}"
+                            class="{{ $linkBase }} {{ request()->routeIs('admin.createUser') ? $linkOn : $linkOff }}">
+                            <i class="fas fa-user-plus w-5 text-center"></i> Data User
+                        </a>
+                        <a href="{{ route('admin.createStaff') }}"
+                            class="{{ $linkBase }} {{ request()->routeIs('admin.createStaff') ? $linkOn : $linkOff }}">
+                            <i class="fas fa-user-tie w-5 text-center"></i> Data Staff
+                        </a>
+                    </div>
                 </div>
-            </div>
+            @endif
         </nav>
 
         {{-- Footer: current user --}}
@@ -186,7 +188,7 @@
                         {{ session('adminData')->username ?? 'admin' }}
                     </p>
                 </div>
-                <form method="POST" action="{{ route('logout') }}" class="ml-auto">
+                <form method="POST" action="{{ route('logout') }}" class="logout-form ml-auto">
                     @csrf
                     <button type="submit" title="Logout"
                         class="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400
@@ -252,7 +254,7 @@
                                 {{ session('adminData')->username ?? 'admin' }}
                             </p>
                         </div>
-                        <form method="POST" action="{{ route('logout') }}">
+                        <form method="POST" action="{{ route('logout') }}" class="logout-form">
                             @csrf
                             <button type="submit"
                                 class="w-full flex items-center gap-3 px-4 py-3 text-sm text-slate-600
@@ -276,7 +278,37 @@
         </footer>
     </div>
 
+    {{-- Modal-level stack: dirender di level body agar overlay menutupi seluruh layar --}}
+    @stack('modals')
+
     @stack('scripts')
+
+    {{-- Konfirmasi logout global (sidebar & topbar) memakai SweetAlert2 --}}
+    <script>
+        document.addEventListener('submit', function(event) {
+            const form = event.target;
+            if (!form.classList.contains('logout-form')) return;
+
+            event.preventDefault();
+
+            Swal.fire({
+                icon: 'warning',
+                title: 'Konfirmasi Logout',
+                text: 'Apakah Anda yakin ingin keluar dari sesi ini?',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Keluar',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#64748b',
+                reverseButtons: true,
+                focusCancel: true,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

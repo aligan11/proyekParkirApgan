@@ -12,6 +12,9 @@ class Admin extends Authenticatable
 
     protected $table = 'admin'; // nama tabel, sesuaikan jika beda
 
+    // Primary key tabel `admin` adalah id_admin (bukan id default Laravel)
+    protected $primaryKey = 'id_admin';
+
     protected $fillable = [
         'id_admin',
         'nama_lengkap',

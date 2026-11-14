@@ -29,13 +29,15 @@ Route::get('/', [HomeController::class, 'home'])->name('home');
 Route::post('/login', [AuthController::class, 'loginProcess'])->name('loginAdmin');
 
 
-Route::middleware(['check.role:admin_super'])->group(function () {
+/**
+ * Dashboard & seluruh fitur operasional.
+ * Dapat diakses oleh role: admin_super dan admin.
+ */
+Route::middleware(['check.role:admin_super,admin'])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('dataparkir', dataParkirController::class);
-
-
 
     Route::get('/parkir-denda', [DashboardController::class, 'indexDenda'])->name('parkir.denda');
     Route::put('/denda/{id}/selesai', [DashboardController::class, 'dendaSelesai'])
@@ -56,29 +58,33 @@ Route::middleware(['check.role:admin_super'])->group(function () {
     Route::put('/update-jenis-kendaraan/{id}', [dataKendaraanController::class, 'update'])->name('update');
     Route::delete('/data-kendaraan/delete/{id}', [dataKendaraanController::class, 'destroy'])->name('destroy');
 
-
     Route::get('/data-latar-belakang', [DashboardController::class, 'tampilDataBg'])->name('data.bg');
 
+    Route::resource('topup-parkir', topUpController::class);
 
-    Route::get('/create-admin', [AdminController::class, 'index'])->name('admin.index');
-    Route::post('/store-admin', [AdminController::class, 'store'])->name('admin.store');
-    Route::put('update/{admin}', [AdminController::class, 'update'])->name('admin.update');
-    Route::delete('destroy/{admin}', [AdminController::class, 'destroy'])->name('admin.destroy');
-    Route::post('/storeStaff', [AdminController::class, 'storeStaff'])->name('admin.storeStaff');
-    Route::get('/createUser', [AdminController::class, 'createUser'])->name('admin.createUser');
-    Route::get('/createStaff', [AdminController::class, 'createStaff'])->name('admin.createStaff');
-    Route::post('/createUser', [AdminController::class, 'storeUser'])->name('admin.storeUser');
-    Route::put('/edit-user/{id}', [AdminController::class, 'editUser'])->name('admin.editUser');
-    Route::put('/edit-staff/{id}', [AdminController::class, 'editStaff'])->name('admin.editStaff');
-    Route::delete('/hapus-staff/{id}', [AdminController::class, 'destroyStaff'])->name('admin.destroyStaff');
-    Route::get('/get-user/{id}', [AdminController::class, 'getUser']);
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    Route::resource('topup-parkir', topUpController::class);
-});
+    /**
+     * Manajemen Pengguna (Data Admin, Data User, Data Staff).
+     * HANYA dapat diakses role: admin_super.
+     * Role admin tidak boleh melihat menu maupun mengakses route ini.
+     */
+    Route::middleware(['check.role:admin_super'])->group(function () {
+        Route::get('/create-admin', [AdminController::class, 'index'])->name('admin.index');
+        Route::post('/store-admin', [AdminController::class, 'store'])->name('admin.store');
+        Route::put('/update/{admin}', [AdminController::class, 'update'])->name('admin.update');
+        Route::delete('/destroy/{admin}', [AdminController::class, 'destroy'])->name('admin.destroy');
 
-Route::middleware(['check.role:admin'])->group(function () {
-    Route::get('/dashboard-superadmin', [AdminController::class, 'superAdminDashboard'])->name('dashboard.adminsuper');
+        Route::get('/createUser', [AdminController::class, 'createUser'])->name('admin.createUser');
+        Route::post('/createUser', [AdminController::class, 'storeUser'])->name('admin.storeUser');
+        Route::put('/edit-user/{id}', [AdminController::class, 'editUser'])->name('admin.editUser');
+
+        Route::get('/createStaff', [AdminController::class, 'createStaff'])->name('admin.createStaff');
+        Route::post('/storeStaff', [AdminController::class, 'storeStaff'])->name('admin.storeStaff');
+        Route::delete('/hapus-staff/{id}', [AdminController::class, 'destroyStaff'])->name('admin.destroyStaff');
+
+        Route::get('/get-user/{id}', [AdminController::class, 'getUser'])->name('admin.getUser');
+    });
 });
 
 

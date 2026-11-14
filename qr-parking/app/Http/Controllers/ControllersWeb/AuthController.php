@@ -21,9 +21,9 @@ class AuthController extends Controller
 
         // Arahkan berdasarkan role
         if ($role === 'admin_super') {
-            return redirect()->route('dashboard'); // contoh: route ke dashboard admin
+            return redirect()->route('dashboard'); // dashboard admin super
         } elseif ($role === 'admin') {
-            return redirect()->route('dashboard.adminsuper'); // contoh: route ke dashboard admin super
+            return redirect()->route('dashboard'); // admin biasa: menu operasional
         } else {
             return redirect()->route('home')->withErrors(['role' => 'Role tidak dikenali']);
         }

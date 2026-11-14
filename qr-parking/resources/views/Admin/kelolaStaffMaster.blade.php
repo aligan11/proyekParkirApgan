@@ -7,14 +7,23 @@
     <div class="space-y-6">
 
         @if (session('success'))
-            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
             <script>
                 Swal.fire({
                     icon: 'success',
                     title: 'Berhasil',
-                    text: "{{ session('success') }}",
+                    text: "{!! session('success') !!}",
                     timer: 2500,
                     showConfirmButton: false,
+                });
+            </script>
+        @endif
+
+        @if ($errors->any())
+            <script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: "{!! $errors->first() !!}",
                 });
             </script>
         @endif
@@ -129,15 +138,12 @@
 
                             <div>
                                 <label class="block text-sm font-semibold text-slate-700 mb-1.5">
-                                    Password Confirmation <span class="text-red-500">*</span>
+                                    Konfirmasi Password <span class="text-red-500">*</span>
                                 </label>
                                 <input type="password" name="password_confirmation" value=""
                                     placeholder="Password default: 123456"
                                     class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-700 focus:bg-white focus:border-red-400 focus:ring-2 focus:ring-red-100 outline-none transition"
                                     required />
-                                @error('password')
-                                    <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
-                                @enderror
                             </div>
 
                         </div>
@@ -156,15 +162,10 @@
 
                         <div class="flex justify-end gap-3 mt-6">
                             <button type="submit"
-                                class="inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2.5 shadow-sm transition">
+                                class="inline-flex items-center gap-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-sm font-semibold px-4 py-2.5 shadow-sm transition">
                                 <i class="fas fa-save"></i>
                                 Simpan
                             </button>
-                            <a href="{{ url()->previous() }}"
-                                class="inline-flex items-center gap-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-sm font-semibold px-4 py-2.5 shadow-sm transition">
-                                <i class="fas fa-times"></i>
-                                Batal
-                            </a>
                         </div>
                     </form>
                 </div>
@@ -190,11 +191,12 @@
                                     </th>
                                     <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide">Password
                                     </th>
-                                    <th class="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide">Aksi</th>
+                                    <th class="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide">Aksi
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($users as $index => $Staff)
+                                @forelse ($users as $index => $Staff)
                                     <tr class="border-t border-slate-100 hover:bg-slate-50/70 transition">
                                         <td class="px-4 py-3 text-center">
                                             {{ $loop->iteration }}
@@ -207,30 +209,30 @@
                                         <td class="px-4 py-3">
                                             <div class="flex items-center justify-center gap-2">
                                                 <!-- Tombol Edit -->
-                                                <a href="javascript:void(0);"
+                                                <button type="button" onclick="openEditModal({{ $Staff->id_users }})"
                                                     class="inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold transition bg-amber-50 text-amber-700 hover:bg-amber-100"
-                                                    title="Edit" data-user-id="{{ $Staff->id_users }}"
-                                                    onclick="openEditModal(this)">
+                                                    title="Edit">
                                                     <i class="fas fa-edit"></i>
-                                                </a>
+                                                </button>
 
                                                 <!-- Tombol Hapus -->
-                                                <form action="{{ route('admin.destroyStaff', $Staff->id_users) }}"
-                                                    method="POST"
-                                                    onsubmit="return confirm('Yakin ingin menghapus staff ini?')"
-                                                    class="inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit"
-                                                        class="inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold transition bg-red-50 text-red-600 hover:bg-red-100"
-                                                        title="Hapus">
-                                                        <i class="fas fa-trash-alt"></i>
-                                                    </button>
-                                                </form>
+                                                <button type="button"
+                                                    class="inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold transition bg-red-50 text-red-600 hover:bg-red-100 btn-hapus"
+                                                    data-id="{{ $Staff->id_users }}"
+                                                    data-nama="{{ $Staff->nama_lengkap }}" title="Hapus">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
                                             </div>
                                         </td>
                                     </tr>
-                                @endforeach
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="px-4 py-10 text-center text-slate-400">
+                                            <i class="fas fa-inbox text-2xl mb-2 block"></i>
+                                            Belum ada data staff.
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -246,93 +248,69 @@
 
                     <div class="mt-4 text-sm text-slate-500">
                         <p>
-                            Mohon berhati-hati jika ingin menghapus data kendaraan usahakan sebelum melakukan peng-inputan
-                            data parkir, karena akan menyebabkan data error!
+                            Mohon berhati-hati jika ingin menghapus data staff, pastikan tidak sedang digunakan untuk login
+                            atau proses lainnya!
                         </p>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+@endsection
 
-        <!-- Modal Edit -->
-        <div id="editModal"
-            class="hidden fixed inset-0 z-[999] bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
-            <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-2xl relative overflow-y-auto max-h-[95vh]">
-                <!-- Tombol Close -->
-                <button onclick="closeEditModal()"
+@push('modals')
+    {{-- MODAL EDIT STAFF --}}
+    <div id="editModal" class="hidden fixed inset-0 z-[100] overflow-y-auto bg-slate-900/60 backdrop-blur-sm">
+        <div class="flex min-h-full items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-2xl relative my-auto">
+                <button type="button" onclick="closeEditModal()"
                     class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition">
                     <i class="fas fa-times"></i>
                 </button>
 
-                <!-- Judul -->
-                <h2 class="text-xl font-semibold mb-4 text-slate-900 border-b border-slate-100 pb-2">Edit
-                    Data User
-                </h2>
+                <h2 class="text-xl font-semibold mb-4 text-slate-900 border-b border-slate-100 pb-2">Edit Data Staff</h2>
 
-                <form id="editUserForm" method="POST" enctype="multipart/form-data">
+                <form id="editStaffForm" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <input type="hidden" id="edit_id_users" name="id_users">
 
                         <div>
-                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nama
-                                Lengkap</label>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nama Lengkap</label>
                             <input type="text" id="edit_nama_lengkap" name="nama_lengkap1" value=""
                                 placeholder="Masukkan nama lengkap"
                                 class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-700 focus:bg-white focus:border-red-400 focus:ring-2 focus:ring-red-100 outline-none transition" />
-                            @error('nama_lengkap')
-                                <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
-                            @enderror
                         </div>
 
                         <div>
-                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Jenis
-                                Kelamin</label>
-                            <select name="jenis_kelamin2"
+                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Jenis Kelamin</label>
+                            <select id="edit_jenis_kelamin" name="jenis_kelamin2"
                                 class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-700 focus:bg-white focus:border-red-400 focus:ring-2 focus:ring-red-100 outline-none transition">
-                                <option value="" disabled {{ old('jenis_kelamin') ? '' : 'selected' }}>Pilih
-                                    jenis
-                                    kelamin</option>
-                                <option value="Laki-laki"
-                                    {{ old('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>
-                                    Laki-laki</option>
-                                <option value="Perempuan"
-                                    {{ old('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>
-                                    Perempuan</option>
+                                <option value="" disabled>Pilih jenis kelamin</option>
+                                <option value="Laki-laki">Laki-laki</option>
+                                <option value="Perempuan">Perempuan</option>
                             </select>
-                            @error('jenis_kelamin')
-                                <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
-                            @enderror
                         </div>
 
                         <div>
-                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">No
-                                Handphone</label>
-                            <input id="edit_no_hp" type="text" name="handphone1"
-                                value="{{ old('handphone') }}" placeholder="Contoh: 081234567890"
+                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">No Handphone</label>
+                            <input id="edit_no_hp" type="text" name="handphone1" value=""
+                                placeholder="Contoh: 081234567890"
                                 class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-700 focus:bg-white focus:border-red-400 focus:ring-2 focus:ring-red-100 outline-none transition" />
-                            @error('handphone')
-                                <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
-                            @enderror
                         </div>
 
                         <div>
-                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Email
-                                (Username)
-                            </label>
-                            <input id="edit_email" type="email" name="username1" value="{{ old('username') }}"
+                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Email (Username)</label>
+                            <input id="edit_email" type="email" name="username1" value=""
                                 placeholder="Tuliskan alamat email aktif"
                                 class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-700 focus:bg-white focus:border-red-400 focus:ring-2 focus:ring-red-100 outline-none transition" />
-                            @error('username')
-                                <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
-                            @enderror
                         </div>
 
                         <div>
-                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Password</label>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Password Baru</label>
                             <input id="edit_password" type="password" name="password1"
-                                placeholder="Password default: 123456"
+                                placeholder="Kosongkan jika tidak diubah"
                                 class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-700 focus:bg-white focus:border-red-400 focus:ring-2 focus:ring-red-100 outline-none transition" />
                             @error('password1')
                                 <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
@@ -340,13 +318,9 @@
                         </div>
 
                         <div>
-                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Konfirmasi
-                                Password</label>
-                            <input type="password" name="password1_confirmation" placeholder="Password default: 123456"
+                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Konfirmasi Password</label>
+                            <input type="password" name="password1_confirmation" placeholder="Ulangi password baru"
                                 class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-700 focus:bg-white focus:border-red-400 focus:ring-2 focus:ring-red-100 outline-none transition" />
-                            @error('password1_confirmation')
-                                <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
-                            @enderror
                         </div>
 
                     </div>
@@ -355,105 +329,173 @@
                         <label class="block text-sm font-semibold text-slate-700 mb-1.5">Alamat</label>
                         <textarea id="edit_alamat" name="alamat2" placeholder="Masukkan alamat lengkap"
                             class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-700 focus:bg-white focus:border-red-400 focus:ring-2 focus:ring-red-100 outline-none transition"
-                            rows="4">{{ old('alamat') }}</textarea>
-                        @error('alamat')
-                            <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
-                        @enderror
+                            rows="4"></textarea>
                     </div>
 
                     <div class="flex justify-end items-center gap-3 mt-6">
-                        <div x-data="{ showModal: false, adminPassword: '' }">
-                            <!-- Tombol Update -->
-                            <button type="button" @click="showModal = true"
-                                class="inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2.5 shadow-sm transition">
-                                <i class="fas fa-save"></i> Update
-                            </button>
-
-                            <!-- Modal Konfirmasi Password Admin -->
-                            <div x-show="showModal"
-                                class="fixed inset-0 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm z-50"
-                                x-transition>
-                                <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
-                                    <h2 class="text-xl font-semibold mb-4 text-slate-900">Konfirmasi Aksi
-                                    </h2>
-                                    <p class="mb-3 text-sm text-slate-600">Masukkan password admin untuk
-                                        melanjutkan:
-                                    </p>
-                                    <input type="password" x-model="adminPassword" name="admin_password"
-                                        placeholder="Password admin"
-                                        class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-700 focus:bg-white focus:border-red-400 focus:ring-2 focus:ring-red-100 outline-none transition mb-4">
-
-                                    <div class="flex justify-end gap-3">
-                                        <!-- Tombol batal: hanya tutup modal -->
-                                        <button type="button" @click="showModal = false"
-                                            class="border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 inline-flex items-center gap-2 rounded-xl text-sm font-semibold px-4 py-2.5 transition">
-                                            Batal
-                                        </button>
-
-                                        <!-- Tombol lanjut -->
-                                        <button type="button"
-                                            @click="if (adminPassword.length > 0) $refs.submitButton.click()"
-                                            class="inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2.5 shadow-sm transition">
-                                            Lanjutkan
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Tombol submit form tersembunyi -->
-                            <button type="submit" x-ref="submitButton" class="hidden"></button>
-                        </div>
-
-                        <!-- Tombol batal luar (misalnya cancel edit form) -->
-                        <a href="javascript:void(0);"
+                        <button type="button" onclick="closeEditModal()"
+                            class="border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 inline-flex items-center gap-2 rounded-xl text-sm font-semibold px-4 py-2.5 transition">
+                            Batal
+                        </button>
+                        <button type="button" onclick="openConfirmEdit()"
                             class="inline-flex items-center gap-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-sm font-semibold px-4 py-2.5 shadow-sm transition">
-                            <i class="fas fa-times"></i> Batal
-                        </a>
+                            <i class="fas fa-save"></i> Update
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
-
     </div>
-@endsection
 
-<script>
-    function openEditModal(element) {
-        const id = element.getAttribute('data-user-id');
+    {{-- MODAL KONFIRMASI PASSWORD --}}
+    <div id="modalConfirmEdit" class="hidden fixed inset-0 z-[110] overflow-y-auto bg-slate-900/60 backdrop-blur-sm">
+        <div class="flex min-h-full items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md my-auto">
+                <h2 class="text-lg font-bold mb-2 text-slate-900">Konfirmasi Aksi</h2>
+                <p class="mb-3 text-sm text-slate-600">Masukkan password admin (akun yang sedang login) untuk melanjutkan:
+                </p>
+                <input type="password" id="editAdminPassword" placeholder="Password admin"
+                    class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-700 focus:bg-white focus:border-red-400 focus:ring-2 focus:ring-red-100 outline-none transition mb-4">
 
-        // Tampilkan modal
-        document.getElementById('editModal').classList.remove('hidden');
+                <div class="flex justify-end gap-3">
+                    <button type="button" onclick="closeConfirmEdit()"
+                        class="border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 inline-flex items-center gap-2 rounded-xl text-sm font-semibold px-4 py-2.5 transition">
+                        Batal
+                    </button>
+                    <button type="button" onclick="submitEditWithPassword()"
+                        class="inline-flex items-center gap-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-sm font-semibold px-4 py-2.5 shadow-sm transition">
+                        <i class="fas fa-lock"></i> Lanjutkan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        // Update form action
-        const form = document.getElementById('editUserForm');
-        form.action = `/edit-user/${id}`;
+    {{-- MODAL HAPUS --}}
+    <div id="modalHapus" class="hidden fixed inset-0 z-[100] overflow-y-auto bg-slate-900/60 backdrop-blur-sm">
+        <div class="flex min-h-full items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-xl w-full max-w-md my-auto">
+                <div class="px-6 py-4 border-b border-slate-100">
+                    <h3 class="font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fas fa-shield-alt text-red-600"></i> Konfirmasi Hapus
+                    </h3>
+                </div>
 
-        // Kosongkan dulu input agar tidak berisi data lama
-        form.reset();
+                <form id="formHapus" method="POST" class="p-6 space-y-4">
+                    @csrf
+                    @method('DELETE')
 
-        // Ambil data user
-        fetch(`/get-user/${id}`)
-            .then(response => {
-                if (!response.ok) throw new Error('Data tidak ditemukan');
-                return response.json();
-            })
-            .then(user => {
-                // Isi data ke form
-                document.getElementById('edit_nama_lengkap').value = user.nama_lengkap ?? '';
-                document.getElementById('edit_email').value = user.username ?? '';
-                document.getElementById('edit_no_hp').value = user.no_hp ?? '';
-                document.querySelector('select[name="jenis_kelamin2"]').value = user.jenis_kelamin ?? '';
-                document.getElementById('edit_alamat').value = user.alamat ?? '';
-                document.getElementById('edit_id_users').value = user.id_users ?? '';
-            })
-            .catch(error => {
-                console.error('Gagal mengambil data:', error);
-                alert('Gagal mengambil data user.');
-                closeEditModal();
+                    <p class="text-sm text-slate-600">
+                        Menghapus data <b id="hapusNama" class="text-slate-900"></b>.
+                        Masukkan <b>password admin</b> untuk melanjutkan.
+                    </p>
+
+                    <input type="password" name="password_super_admin" placeholder="Password admin"
+                        class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-700 focus:bg-white focus:border-red-400 focus:ring-2 focus:ring-red-100 outline-none transition">
+
+                    <div class="flex justify-end gap-3">
+                        <button type="button" onclick="closeHapus()"
+                            class="border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 inline-flex items-center gap-2 rounded-xl text-sm font-semibold px-4 py-2.5 transition">
+                            Batal
+                        </button>
+                        <button
+                            class="inline-flex items-center gap-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-sm font-semibold px-4 py-2.5 shadow-sm transition">
+                            <i class="fas fa-trash"></i> Hapus
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+@endpush
+
+@push('scripts')
+    <script>
+        const STAFF_EDIT_URL = "{{ url('edit-user') }}";
+        const STAFF_GET_URL = "{{ url('get-user') }}";
+        const STAFF_DELETE_URL = "{{ url('hapus-staff') }}";
+
+        const editModal = document.getElementById('editModal');
+        const modalConfirmEdit = document.getElementById('modalConfirmEdit');
+        const modalHapus = document.getElementById('modalHapus');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.btn-hapus').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    modalHapus.classList.remove('hidden');
+                    document.getElementById('hapusNama').textContent = btn.dataset.nama ?? '';
+                    document.getElementById('formHapus').action =
+                        `${STAFF_DELETE_URL}/${btn.dataset.id}`;
+                });
             });
-    }
+        });
 
-    function closeEditModal() {
-        document.getElementById('editModal').classList.add('hidden');
-    }
-</script>
+        function openEditModal(id) {
+            const form = document.getElementById('editStaffForm');
+            editModal.classList.remove('hidden');
+            form.action = `${STAFF_EDIT_URL}/${id}`;
+            form.reset();
+
+            fetch(`${STAFF_GET_URL}/${id}`)
+                .then(response => response.json())
+                .then(user => {
+                    document.getElementById('edit_nama_lengkap').value = user.nama_lengkap ?? '';
+                    document.getElementById('edit_email').value = user.username ?? '';
+                    document.getElementById('edit_no_hp').value = user.no_hp ?? '';
+                    document.getElementById('edit_jenis_kelamin').value = user.jenis_kelamin ?? '';
+                    document.getElementById('edit_alamat').value = user.alamat ?? '';
+                    document.getElementById('edit_id_users').value = user.id_users ?? '';
+                })
+                .catch(error => {
+                    console.error('Gagal mengambil data staff:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: 'Gagal mengambil data staff.'
+                    });
+                    closeEditModal();
+                });
+        }
+
+        function closeEditModal() {
+            editModal.classList.add('hidden');
+        }
+
+        function openConfirmEdit() {
+            modalConfirmEdit.classList.remove('hidden');
+        }
+
+        function closeConfirmEdit() {
+            modalConfirmEdit.classList.add('hidden');
+            document.getElementById('editAdminPassword').value = '';
+        }
+
+        function submitEditWithPassword() {
+            const password = document.getElementById('editAdminPassword').value;
+
+            if (!password) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Password Kosong',
+                    text: 'Masukkan password admin terlebih dahulu'
+                });
+                return;
+            }
+
+            const form = document.getElementById('editStaffForm');
+            form.querySelectorAll('input[name="admin_password"]').forEach(el => el.remove());
+
+            let input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'admin_password';
+            input.value = password;
+            form.appendChild(input);
+
+            form.submit();
+        }
+
+        function closeHapus() {
+            modalHapus.classList.add('hidden');
+        }
+    </script>
+@endpush

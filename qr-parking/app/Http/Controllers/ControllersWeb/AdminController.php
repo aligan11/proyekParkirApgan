@@ -5,9 +5,7 @@ namespace App\Http\Controllers\ControllersWeb;
 use Illuminate\Http\Request;
 use App\Models\Admin;
 use App\Models\User;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
 
 
 class AdminController extends Controller
@@ -15,25 +13,28 @@ class AdminController extends Controller
     public function index()
     {
         $admins = Admin::orderBy('created_at', 'desc')->paginate(5);
-        return view('admin.dataUsersMaster', compact('admins'));
+        return view('Admin.dataUsersMaster', compact('admins'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'nama_lengkap' => 'required|string|max:100',
-            'username' => 'required|email|unique:admins,username',
-            'password' => 'required|min:6|confirmed',
-            'handphone' => 'required',
-            'alamat' => 'required',
+            'nama_lengkap'  => 'required|string|max:200',
+            'username'      => 'required|email|unique:admin,username',
+            'password'      => 'required|min:6|confirmed',
+            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
+            'handphone'     => 'required|string|max:20',
+            'alamat'        => 'required|string|max:200',
         ]);
 
         Admin::create([
-            'nama_lengkap' => $request->nama_lengkap,
-            'username' => $request->username,
-            'password' => Hash::make($request->password),
-            'handphone' => $request->handphone,
-            'alamat' => $request->alamat,
+            'nama_lengkap'  => $request->nama_lengkap,
+            'username'      => $request->username,
+            'password'      => Hash::make($request->password),
+            'jenis_kelamin' => $request->jenis_kelamin,
+            'no_hp'         => $request->handphone,
+            'alamat'        => $request->alamat,
+            'role'          => 'admin',
         ]);
 
         return back()->with('success', 'Admin berhasil ditambahkan');
@@ -42,35 +43,35 @@ class AdminController extends Controller
     public function update(Request $request, Admin $admin)
     {
         $request->validate([
-            'nama_lengkap2' => 'required|string|max:100',
-            'username2' => 'required|email|unique:admins,username,' . $admin->id,
-            'handphone2' => 'required',
-            'alamat2' => 'required',
-            'password' => 'nullable|min:6|confirmed',
-            'password_super_admin' => 'required'
+            'nama_lengkap2' => 'required|string|max:200',
+            'username2'     => 'required|email|unique:admin,username,' . $admin->id_admin . ',id_admin',
+            'handphone2'    => 'required|string|max:20',
+            'alamat2'       => 'required|string|max:200',
+            'password'      => 'nullable|min:6|confirmed',
+            'password_super_admin' => 'required',
         ]);
 
-        $superAdmin = Auth::user();
+        $superAdmin = session('adminData');
 
         // VALIDASI ROLE
-        if ($superAdmin->role !== 'admin_super') {
+        if (!$superAdmin || $superAdmin->role !== 'admin_super') {
             return back()->withErrors([
                 'password_super_admin' => 'Anda bukan Super Admin'
-            ]);
+            ])->withInput();
         }
 
-        // VALIDASI PASSWORD SUPER ADMIN
+        // VALIDASI PASSWORD SUPER ADMIN (akun yang sedang login)
         if (!Hash::check($request->password_super_admin, $superAdmin->password)) {
             return back()->withErrors([
                 'password_super_admin' => 'Password Super Admin salah'
-            ]);
+            ])->withInput();
         }
 
         // UPDATE DATA
         $admin->nama_lengkap = $request->nama_lengkap2;
-        $admin->username = $request->username2;
-        $admin->handphone = $request->handphone2;
-        $admin->alamat = $request->alamat2;
+        $admin->username     = $request->username2;
+        $admin->no_hp        = $request->handphone2;
+        $admin->alamat       = $request->alamat2;
 
         if ($request->filled('password')) {
             $admin->password = Hash::make($request->password);
@@ -80,13 +81,28 @@ class AdminController extends Controller
 
         return back()->with('success', 'Data admin berhasil diperbarui');
     }
+
     public function destroy(Request $request, Admin $admin)
     {
         $request->validate([
             'password_super_admin' => 'required'
         ]);
 
-        // (Optional) validasi super admin di sini
+        $superAdmin = session('adminData');
+
+        if (!$superAdmin || $superAdmin->role !== 'admin_super') {
+            return back()->withErrors(['password_super_admin' => 'Anda bukan Super Admin']);
+        }
+
+        // Validasi password sesuai akun yang sedang login
+        if (!Hash::check($request->password_super_admin, $superAdmin->password)) {
+            return back()->withErrors(['password_super_admin' => 'Password Super Admin salah']);
+        }
+
+        // Cegah menghapus akun yang sedang dipakai login
+        if ($superAdmin->id_admin === $admin->id_admin) {
+            return back()->withErrors(['password_super_admin' => 'Akun yang sedang login tidak dapat dihapus']);
+        }
 
         $admin->delete();
 
@@ -127,14 +143,14 @@ class AdminController extends Controller
 
         $staff->save();
 
-        return redirect()->route('Admin.createStaff')->with('success', 'Data staff berhasil disimpan!');
+        return redirect()->route('admin.createStaff')->with('success', 'Data staff berhasil disimpan!');
     }
 
 
     public function createUser()
     {
         $users = User::paginate(10); // contoh pagination
-        return view('admin.tambahUser', compact('users'));
+        return view('Admin.tambahUser', compact('users'));
     }
 
     public function createStaff()
@@ -142,9 +158,6 @@ class AdminController extends Controller
         $users = User::where('role', 'staff')->paginate(10); // hanya staff
         return view('Admin.kelolaStaffMaster', compact('users'));
     }
-
-    // UserController.php
-
 
 
     public function storeUser(Request $request)
@@ -155,7 +168,7 @@ class AdminController extends Controller
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
             'handphone' => 'required|string|max:20',
             'username' => 'required|email|unique:users,username',
-            'password' => 'required|string|min:6',
+            'password' => 'required|string|min:6|confirmed',
             'alamat' => 'nullable|string|max:1000',
         ]);
 
@@ -175,15 +188,12 @@ class AdminController extends Controller
             'role' => "user",
         ]);
 
-        return redirect()->route('Admin.createUser')->with('success', 'User berhasil ditambahkan.');
+        return redirect()->route('admin.createUser')->with('success', 'User berhasil ditambahkan.');
     }
-
-
 
 
     public function editUser(Request $request, $id)
     {
-        // dd($request->all());
         $request->validate([
             'nama_lengkap1' => 'sometimes|required|string|max:255',
             'photo' => 'sometimes|nullable|image|max:2048',
@@ -195,19 +205,19 @@ class AdminController extends Controller
             'admin_password' => 'required|string',
         ]);
 
-        // ✅ Ambil data admin dari session
+        // Ambil data admin dari session
         $admin = session('adminData');
 
         if (!$admin) {
             return redirect()->back()->withErrors(['admin_password' => 'Admin tidak ditemukan'])->withInput();
         }
 
-        // ✅ Cek password admin
+        // Cek password admin (akun yang sedang login)
         if (!Hash::check($request->admin_password, $admin->password)) {
             return redirect()->back()->withErrors(['admin_password' => 'Password admin tidak valid'])->withInput();
         }
 
-        // ✅ Update data user
+        // Update data user
         $user = User::findOrFail($id);
 
         if ($request->hasFile('photo')) {
@@ -227,25 +237,32 @@ class AdminController extends Controller
 
         $user->save();
 
-        return redirect()->route('Admin.createStaff')->with('success', 'Data user berhasil diperbarui.');
+        return redirect()->back()->with('success', 'Data user berhasil diperbarui.');
     }
 
 
-    public function destroyStaff($id)
+    public function destroyStaff(Request $request, $id)
     {
+        $request->validate([
+            'password_super_admin' => 'required'
+        ]);
+
+        $admin = session('adminData');
+
+        if (!$admin || !Hash::check($request->password_super_admin, $admin->password)) {
+            return back()->withErrors(['password_super_admin' => 'Password admin salah'])->withInput();
+        }
+
         $data = User::findOrFail($id);
         $data->delete();
 
-        return redirect()->back()->with('success', 'Data berhasil dihapus.');
+        return back()->with('success', 'Data berhasil dihapus.');
     }
 
 
-
-    // UserController.php
-
     public function getUser($id_users)
     {
-        $user = User::find($id_users); // Pastikan model User sesuai
+        $user = User::find($id_users);
         return response()->json($user);
     }
 }
